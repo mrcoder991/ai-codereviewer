@@ -6,6 +6,7 @@
   "author": "Ville Saukkonen",
   "license": "MIT",
   "scripts": {
+    "start": "ts-node src/main.ts",
     "build": "tsc",
     "package": "ncc build --source-map --license licenses.txt",
     "format": "prettier --write .",

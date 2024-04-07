@@ -11,9 +11,9 @@ const OPENAI_API_MODEL: string = core.getInput("OPENAI_API_MODEL");
 
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
-const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
-});
+// const openai = new OpenAI({
+//   apiKey: OPENAI_API_KEY,
+// });
 
 interface PRDetails {
   owner: string;
@@ -124,20 +124,30 @@ async function getAIResponse(prompt: string): Promise<Array<{
   };
 
   try {
-    const response = await openai.chat.completions.create({
-      ...queryConfig,
-      // return JSON if the model supports it:
-      ...(OPENAI_API_MODEL === "gpt-4-1106-preview"
-        ? { response_format: { type: "json_object" } }
-        : {}),
-      messages: [
+    // const response = await openai.chat.completions.create({
+    //   ...queryConfig,
+    //   // return JSON if the model supports it:
+    //   ...(OPENAI_API_MODEL === "gpt-4-1106-preview"
+    //     ? { response_format: { type: "json_object" } }
+    //     : {}),
+    //   messages: [
+    //     {
+    //       role: "system",
+    //       content: prompt,
+    //     },
+    //   ],
+    // });
+
+    //create a dummy response
+    const response = {
+      choices: [
         {
-          role: "system",
-          content: prompt,
+          message: {
+            content: `{"reviews": [{"lineNumber": "1", "reviewComment": "This is a dummy comment"}]}`,
+          },
         },
       ],
-    });
-
+    };
     const res = response.choices[0].message?.content?.trim() || "{}";
     return JSON.parse(res).reviews;
   } catch (error) {

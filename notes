@@ -1,0 +1,46 @@
+const aiId = "52bffb83-b3be-420d-aa1e-76a0a5e11058"
+
+first call create new chat session api
+
+        /api/v1/ai/{aiId}/chats 
+            returns chatId
+
+call Start a chat session (basically sending message to ai)
+        
+        /api/v1/chats/{chatId}
+
+        eg body {
+                "date": "2024-05-16T11:46:19.851Z",
+                "prompt": "review this code package ValidationResultErrorBean errors = new ValidationResultErrorBeanaccreditedAgentsWS;"
+            }   
+            returns text output
+
+module to summarize all the chats 
+
+        /api/v1/chats/{chatId}
+            body {
+                date: "",
+                "prompt": "summarize all the changes in this PR"
+            }
+
+            returns text summary
+
+module to get PR details 
+
+        todo: research and testing
+
+module to POST review comment
+
+        todo: research and testing
+
+module to post summary
+
+        todo: research and testing
+
+module to convert git diff into text for AI
+        
+        todo: research and testing
+
+
+
+        https://engage19billing.test.devappdirect.me/api/integration/v1/dummy/success?token={token}

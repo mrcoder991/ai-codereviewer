@@ -6,7 +6,7 @@
   "author": "Ville Saukkonen",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node src/main.ts",
+    "start": "ts-node src/index.ts",
     "build": "tsc",
     "package": "ncc build --source-map --license licenses.txt",
     "format": "prettier --write .",
@@ -15,15 +15,20 @@
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@octokit/rest": "^19.0.7",
+    "axios": "^1.6.8",
     "minimatch": "^7.4.2",
     "openai": "^4.20.1",
     "parse-diff": "^0.11.1",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.2.0",
     "@types/node": "^18.15.5",
     "@vercel/ncc": "^0.36.1",
+    "eslint": "^8.57.0",
+    "globals": "^15.2.0",
     "prettier": "^2.8.6",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.2",
+    "typescript-eslint": "^7.9.0"
   }
 }

@@ -4,8 +4,10 @@ import OpenAI from "openai";
 import { Octokit } from "@octokit/rest";
 import parseDiff, { Chunk, File } from "parse-diff";
 import minimatch from "minimatch";
+import { Console } from "console";
 
-const GITHUB_TOKEN: string = core.getInput("GITHUB_TOKEN");
+// const GITHUB_TOKEN: string = core.getInput("GITHUB_TOKEN");
+const GITHUB_TOKEN: string = process.env.UDAY_APPDIRECT_FINEGRAINED_ACCESS_TOKEN ?? "";
 const OPENAI_API_KEY: string = core.getInput("OPENAI_API_KEY");
 const OPENAI_API_MODEL: string = core.getInput("OPENAI_API_MODEL");
 
@@ -21,12 +23,22 @@ interface PRDetails {
   pull_number: number;
   title: string;
   description: string;
+  commit_id: string;
 }
 
-async function getPRDetails(): Promise<PRDetails> {
-  const { repository, number } = JSON.parse(
-    readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
-  );
+export async function getPRDetails(): Promise<PRDetails> {
+  // const { repository, number } = JSON.parse(
+  //   readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
+  // );
+
+  const repository = {
+    owner: {
+      login: "uday-appdirect",
+    },
+    name: "codeball-test",
+  };
+  const number = 17;
+
   const prResponse = await octokit.pulls.get({
     owner: repository.owner.login,
     repo: repository.name,
@@ -38,10 +50,11 @@ async function getPRDetails(): Promise<PRDetails> {
     pull_number: number,
     title: prResponse.data.title ?? "",
     description: prResponse.data.body ?? "",
+    commit_id: prResponse.data.head.sha ?? ""
   };
 }
 
-async function getDiff(
+export async function getDiff(
   owner: string,
   repo: string,
   pull_number: number
@@ -156,7 +169,7 @@ async function getAIResponse(prompt: string): Promise<Array<{
   }
 }
 
-function createComment(
+export function createComment(
   file: File,
   chunk: Chunk,
   aiResponses: Array<{
@@ -176,29 +189,48 @@ function createComment(
   });
 }
 
-async function createReviewComment(
+export async function createReviewComment(
   owner: string,
   repo: string,
   pull_number: number,
   comments: Array<{ body: string; path: string; line: number }>
 ): Promise<void> {
-  await octokit.pulls.createReview({
-    owner,
-    repo,
-    pull_number,
-    comments,
-    event: "COMMENT",
-  });
+  // await octokit.pulls.createReview({
+  //   owner: 'uday-appdirect',
+  //   repo: 'codeball-test',
+  //   pull_number: 15,
+  //   body: 'Great stuff!',
+  //   commit_id: 'b561ba4',
+  //   path: 'src/App.jsx',
+  //   start_line: 24,
+  //   start_side: 'RIGHT',
+  //   line: 27,
+  //   side: 'RIGHT',
+  //   headers: {
+  //     'X-GitHub-Api-Version': '2022-11-28'
+  //   }
+  // });
+  // await octokit.pulls.createReview({
+  //   owner,
+  //   repo,
+  //   pull_number,
+  //   comments,
+  //   event: "COMMENT",
+  // });
 }
 
 async function main() {
-  console.log("process.env.GITHUB_EVENT_PATH", process.env.GITHUB_EVENT_PATH)
   const prDetails = await getPRDetails();
-  console.log("prDetails", JSON.stringify(prDetails))
   let diff: string | null;
-  const eventData = JSON.parse(
-    readFileSync(process.env.GITHUB_EVENT_PATH ?? "", "utf8")
-  );
+  // const eventData = JSON.parse(
+  //   readFileSync("process.env.GITHUB_EVENT_PATH" ?? "", "utf8")
+  // );
+
+  const eventData = {
+    action: "opened",
+    before: "before",
+    after: "after",
+  };
 
   if (eventData.action === "opened") {
     diff = await getDiff(
